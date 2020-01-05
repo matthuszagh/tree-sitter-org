@@ -1,1 +1,2 @@
+* About
 Org-mode grammar for tree sitter.
