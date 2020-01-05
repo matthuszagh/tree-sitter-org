@@ -7,69 +7,125 @@
 module.exports = grammar({
     name: 'org',
 
-    conflicts: $ => [
-        [ $._priority_title, $._non_priority_title ]
-    ],
+    extras: $ => [],
+
+    // conflicts: $ => [
+    //     [$._todo_title, $._non_todo_title],
+    //     [$._todo_title_priority, $._todo_title_no_priority],
+    //     [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
+    //     [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
+    //     [$._non_todo_title_tags, $._non_todo_title_no_tags],
+    // ],
 
     externals: $ => [
-        $._stars
-        // $.contents
+        $._sibling_stars,
+        $._child_stars,
+        $._ancestor_stars,
+    ],
+
+    inline: $ => [
+        $._decorated_title,
+        $._todo_title,
+        $._non_todo_title,
+        $._todo_title_priority,
+        $._todo_title_no_priority,
+        $._todo_title_priority_no_tags,
+        $._todo_title_priority_tags,
+        $._todo_title_no_priority_no_tags,
+        $._todo_title_no_priority_tags,
+        $._non_todo_title_no_tags,
+        $._non_todo_title_tags,
+        $._common_headline,
     ],
 
     rules: {
-        // source_file: $ => $.section,
-
         source_file: $ => seq(
             // TODO should include optional contents
-            prec.right(2, repeat($.section))
+            repeat(alias($.sibling_headline, $.headline))
         ),
 
-        section: $ => prec.left(seq(
-            $.headline,
-            // TODO should include optional contents
-            repeat($.section)
-        )),
-
-        // section: $ => prec.right(
-        //     seq(
-        //         choice(
-        //             // TODO other section contents
-        //             prec.right(2, repeat1($.headline)),
-        //             prec.right(seq(
-        //                 prec.left($.contents),
-        //                 prec(1, repeat($.headline))
-        //             ))),
-        //         repeat($._newline)
-        //     )
-        // ),
-
-        // prec.left tries to match same level headings before section
-        headline: $ => prec.left(seq(
-            $._stars,
+        _common_headline: $ => seq(
             $._horiz_space,
-            $._non_priority_title,
-            // choice(
-            //     $._priority_title,
-            //     $._non_priority_title
-            // ),
-            optional(seq(
-                optional($._horiz_space),
-                $.tags
-            )),
+            $._decorated_title,
             optional($._horiz_space),
-            $._newline,
-            // prec(0, optional($.section))
+            repeat($._newline),
+            // TODO should include optional contents
+            optional(choice(
+                seq(
+                    alias($.child_headline, $.headline),
+                    repeat(alias($.sibling_headline, $.headline)),
+                ),
+                $._ancestor_stars,
+            )),
+        ),
+
+        sibling_headline: $ => prec.left(seq(
+            $._sibling_stars,
+            $._common_headline,
         )),
 
-        _priority_title: $ => seq(
-            $.keyword,
+        child_headline: $ => prec.left(seq(
+            $._child_stars,
+            $._common_headline,
+        )),
+
+        _decorated_title: $ => choice(
+            $._todo_title,
+            $._non_todo_title
+        ),
+
+        _todo_title: $ => choice(
+            $._todo_title_priority,
+            $._todo_title_no_priority,
+        ),
+
+        _todo_title_priority: $ => choice(
+            $._todo_title_priority_no_tags,
+            $._todo_title_priority_tags,
+        ),
+
+        _todo_title_no_priority: $ => choice(
+            $._todo_title_no_priority_no_tags,
+            $._todo_title_no_priority_tags,
+        ),
+
+        _non_todo_title: $ => choice(
+            $._non_todo_title_no_tags,
+            $._non_todo_title_tags,
+        ),
+
+        _todo_title_priority_no_tags: $ => seq(
+            $.todo_keyword,
             $._horiz_space,
             $.priority,
             $._horiz_space,
             $.title
         ),
 
-        _non_priority_title: $ => $.title,
+        _todo_title_priority_tags: $ => seq(
+            $._todo_title_priority_no_tags,
+            $.tags
+        ),
+
+        _todo_title_no_priority_no_tags: $ => seq(
+            $.todo_keyword,
+            $._horiz_space,
+            $.title
+        ),
+
+        _todo_title_no_priority_tags: $ => seq(
+            $._todo_title_no_priority_no_tags,
+            $.tags
+        ),
+
+        _non_todo_title_no_tags: $ => seq(
+            $.title
+        ),
+
+        _non_todo_title_tags: $ => seq(
+            $._non_todo_title_no_tags,
+            $.tags
+        ),
 
         tags: $ => seq(
             ':',
@@ -79,13 +135,9 @@ module.exports = grammar({
             ))
         ),
 
-        // ((^(?!\*).*$)+)
-        contents: $ => /(.|\n)+/,
-        // TODO this is a last, catch-all element. Should match everything but empty line.
-        // paragraph: $ => /(.|\n)+/,
-        keyword: $ => /[a-zA-Z]+/,
+        title: $ => /[^ \t\n]+/,
+        todo_keyword: $ => /[a-zA-Z]+/,
         priority: $ => /\[#[A-Za-z]\]/,
-        title: $ => /.+/,
         tag: $ => /[\w@#%]+/,
         _newline: $ => /\n/,
         _horiz_space: $ => /[ \t]+/
