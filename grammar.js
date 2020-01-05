@@ -9,13 +9,14 @@ module.exports = grammar({
 
     extras: $ => [],
 
-    // conflicts: $ => [
-    //     [$._todo_title, $._non_todo_title],
-    //     [$._todo_title_priority, $._todo_title_no_priority],
-    //     [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
-    //     [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
-    //     [$._non_todo_title_tags, $._non_todo_title_no_tags],
-    // ],
+    conflicts: $ => [
+        [$._todo_title, $._non_todo_title],
+        [$._todo_title_priority, $._todo_title_no_priority],
+        [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
+        [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
+        [$._non_todo_title_tags, $._non_todo_title_no_tags],
+        [$.child_no_siblings, $.child_headline],
+    ],
 
     externals: $ => [
         $._sibling_stars,
@@ -50,23 +51,38 @@ module.exports = grammar({
             optional($._horiz_space),
             repeat($._newline),
             // TODO should include optional contents
-            optional(choice(
-                seq(
-                    alias($.child_headline, $.headline),
-                    repeat(alias($.sibling_headline, $.headline)),
-                ),
-                $._ancestor_stars,
-            )),
         ),
 
         sibling_headline: $ => prec.left(seq(
             $._sibling_stars,
             $._common_headline,
+            optional(choice(
+                seq(
+                    alias($.child_headline, $.headline),
+                    repeat1(alias($.sibling_headline, $.headline)),
+                ),
+                alias($.child_no_siblings, $.headline),
+                $._ancestor_stars,
+            )),
+        )),
+
+        child_no_siblings: $ => prec.left(seq(
+            $._child_stars,
+            $._common_headline,
+            optional(choice(
+                seq(
+                    alias($.child_headline, $.headline),
+                    repeat1(alias($.sibling_headline, $.headline)),
+                ),
+                alias($.child_no_siblings, $.headline),
+                $._ancestor_stars,
+            )),
         )),
 
         child_headline: $ => prec.left(seq(
             $._child_stars,
             $._common_headline,
+            optional(alias($.child_headline, $.headline)),
         )),
 
         _decorated_title: $ => choice(
