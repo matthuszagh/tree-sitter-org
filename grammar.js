@@ -9,19 +9,25 @@ module.exports = grammar({
 
     extras: $ => [],
 
-    conflicts: $ => [
-        [$._todo_title, $._non_todo_title],
-        [$._todo_title_priority, $._todo_title_no_priority],
-        [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
-        [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
-        [$._non_todo_title_tags, $._non_todo_title_no_tags],
-        [$.child_no_siblings, $.child_headline],
-    ],
+    // conflicts: $ => [
+    //     [$._todo_title, $._non_todo_title],
+    //     [$._todo_title_priority, $._todo_title_no_priority],
+    //     [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
+    //     [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
+    //     [$._non_todo_title_tags, $._non_todo_title_no_tags],
+    // ],
 
     externals: $ => [
-        $._sibling_stars,
-        $._child_stars,
-        $._ancestor_stars,
+        $._gen1_stars,
+        $._gen2_stars,
+        $._gen3_stars,
+        $._gen4_stars,
+        $._gen5_stars,
+        $._gen6_stars,
+        $._gen7_stars,
+        $._gen8_stars,
+        $._gen9_stars,
+        $._gen10_stars,
     ],
 
     inline: $ => [
@@ -42,7 +48,66 @@ module.exports = grammar({
     rules: {
         source_file: $ => seq(
             // TODO should include optional contents
-            repeat(alias($.sibling_headline, $.headline))
+            repeat(alias($.gen1, $.headline)),
+        ),
+
+        gen1: $ => seq(
+            $._gen1_stars,
+            $._common_headline,
+            repeat(alias($.gen2, $.headline)),
+        ),
+
+        gen2: $ => seq(
+            $._gen2_stars,
+            $._common_headline,
+            repeat(alias($.gen3, $.headline)),
+        ),
+
+        gen3: $ => seq(
+            $._gen3_stars,
+            $._common_headline,
+            repeat(alias($.gen4, $.headline)),
+        ),
+
+        gen4: $ => seq(
+            $._gen4_stars,
+            $._common_headline,
+            repeat(alias($.gen5, $.headline)),
+        ),
+
+        gen5: $ => seq(
+            $._gen5_stars,
+            $._common_headline,
+            repeat(alias($.gen6, $.headline)),
+        ),
+
+        gen6: $ => seq(
+            $._gen6_stars,
+            $._common_headline,
+            repeat(alias($.gen7, $.headline)),
+        ),
+
+        gen7: $ => seq(
+            $._gen7_stars,
+            $._common_headline,
+            repeat(alias($.gen8, $.headline)),
+        ),
+
+        gen8: $ => seq(
+            $._gen8_stars,
+            $._common_headline,
+            repeat(alias($.gen9, $.headline)),
+        ),
+
+        gen9: $ => seq(
+            $._gen9_stars,
+            $._common_headline,
+            repeat(alias($.gen10, $.headline)),
+        ),
+
+        gen10: $ => seq(
+            $._gen10_stars,
+            $._common_headline,
         ),
 
         _common_headline: $ => seq(
@@ -52,38 +117,6 @@ module.exports = grammar({
             repeat($._newline),
             // TODO should include optional contents
         ),
-
-        sibling_headline: $ => prec.left(seq(
-            $._sibling_stars,
-            $._common_headline,
-            optional(choice(
-                seq(
-                    alias($.child_headline, $.headline),
-                    repeat1(alias($.sibling_headline, $.headline)),
-                ),
-                alias($.child_no_siblings, $.headline),
-                $._ancestor_stars,
-            )),
-        )),
-
-        child_no_siblings: $ => prec.left(seq(
-            $._child_stars,
-            $._common_headline,
-            optional(choice(
-                seq(
-                    alias($.child_headline, $.headline),
-                    repeat1(alias($.sibling_headline, $.headline)),
-                ),
-                alias($.child_no_siblings, $.headline),
-                $._ancestor_stars,
-            )),
-        )),
-
-        child_headline: $ => prec.left(seq(
-            $._child_stars,
-            $._common_headline,
-            optional(alias($.child_headline, $.headline)),
-        )),
 
         _decorated_title: $ => choice(
             $._todo_title,
@@ -156,6 +189,6 @@ module.exports = grammar({
         priority: $ => /\[#[A-Za-z]\]/,
         tag: $ => /[\w@#%]+/,
         _newline: $ => /\n/,
-        _horiz_space: $ => /[ \t]+/
+        _horiz_space: $ => /[ \t]+/,
     }
 })
