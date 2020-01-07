@@ -111,7 +111,7 @@ Grandchildren
   (headline (title)))
 
 ======================================================================
-Priority
+TODO
 ======================================================================
 * a
 * TODO b
@@ -122,5 +122,35 @@ Priority
 (source_file
   (headline (title))
   (headline (todo_keyword) (title))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+Priority
+======================================================================
+* a
+* [#A] b
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (priority) (title))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+TODO_Priority
+======================================================================
+* a
+* TODO [#A] b
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (todo_keyword) (priority) (title))
   (headline (title))
   (headline (title)))

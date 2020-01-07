@@ -131,8 +131,8 @@ module.exports = grammar({
             "HOLD",
             "CANCELLED",
         ))),
-        priority: $ => prec(1, /\[#[A-Za-z]\]/),
-        tag: $ => prec(1, /[\w@#%]+/),
+        priority: $ => token(prec(1, /\[#[A-Za-z]\]/)),
+        tag: $ => token(prec(1, /[\w@#%]+/)),
         _newline: $ => /\n/,
         _horiz_space: $ => /[ \t]+/,
     }
