@@ -71,6 +71,46 @@ Nested_3
   (headline (title)))
 
 ======================================================================
+Nested_1_2
+======================================================================
+* a
+* b
+** b1
+** b2
+* c
+** c1
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (title)
+    (headline (title))
+    (headline (title)))
+  (headline (title)
+    (headline (title)))
+  (headline (title)))
+
+======================================================================
+Grandchildren
+======================================================================
+* a
+* b
+** b1
+*** b1_1
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (title)
+    (headline (title)
+      (headline (title))))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
 Priority
 ======================================================================
 * a
