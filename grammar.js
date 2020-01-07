@@ -96,7 +96,7 @@ module.exports = grammar({
             $._horiz_space,
             $._decorated_title,
             optional($._horiz_space),
-            repeat($._newline),
+            repeat1($._newline),
             // TODO should include optional contents
         ),
 
@@ -111,20 +111,30 @@ module.exports = grammar({
             )),
             $.title,
             optional(seq(
-                $._horiz_space,
+                optional($._horiz_space),
                 $.tags,
             )),
         ),
 
-        tags: $ => seq(
+        tags: $ => prec(1, seq(
             ':',
             repeat1(seq(
                 $.tag,
                 ':'
             )),
-        ),
+        )),
 
-        title: $ => /[^\n]+/,
+        // TODO titles match terminating whitespace. This should be
+        // fine because it should be easy to filter out later, but it
+        // would be nice if this could match up to the terminating whitespace.
+        title: $ => /[^ \n]+/,
+        // TODO to be sufficiently general, this will need to be set
+        // by the user specified todo keywords (namely
+        // org-todo-keywords-1). I think this will require using the
+        // variable value to set the grammar, then compile the grammar
+        // and apply it. We can save the compiled grammar so that if
+        // multiple buffers use the same keywords we won't have to do
+        // anything.
         todo_keyword: $ => token(prec(1, choice(
             "TODO",
             "DONE",

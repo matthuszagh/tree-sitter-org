@@ -154,3 +154,33 @@ TODO_Priority
   (headline (todo_keyword) (priority) (title))
   (headline (title))
   (headline (title)))
+
+======================================================================
+tag
+======================================================================
+* a
+* b :tag:
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (title) (tags (tag)))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+multiple_tags
+======================================================================
+* a
+* b :tag1:tag2:
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (title) (tags (tag) (tag)))
+  (headline (title))
+  (headline (title)))
