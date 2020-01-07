@@ -9,14 +9,6 @@ module.exports = grammar({
 
     extras: $ => [],
 
-    // conflicts: $ => [
-    //     [$._todo_title, $._non_todo_title],
-    //     [$._todo_title_priority, $._todo_title_no_priority],
-    //     [$._todo_title_priority_tags, $._todo_title_priority_no_tags],
-    //     [$._todo_title_no_priority_tags, $._todo_title_no_priority_no_tags],
-    //     [$._non_todo_title_tags, $._non_todo_title_no_tags],
-    // ],
-
     externals: $ => [
         $._gen1_stars,
         $._gen2_stars,
@@ -32,16 +24,6 @@ module.exports = grammar({
 
     inline: $ => [
         $._decorated_title,
-        $._todo_title,
-        $._non_todo_title,
-        $._todo_title_priority,
-        $._todo_title_no_priority,
-        $._todo_title_priority_no_tags,
-        $._todo_title_priority_tags,
-        $._todo_title_no_priority_no_tags,
-        $._todo_title_no_priority_tags,
-        $._non_todo_title_no_tags,
-        $._non_todo_title_tags,
         $._common_headline,
     ],
 
@@ -118,62 +100,20 @@ module.exports = grammar({
             // TODO should include optional contents
         ),
 
-        _decorated_title: $ => choice(
-            $._todo_title,
-            $._non_todo_title
-        ),
-
-        _todo_title: $ => choice(
-            $._todo_title_priority,
-            $._todo_title_no_priority,
-        ),
-
-        _todo_title_priority: $ => choice(
-            $._todo_title_priority_no_tags,
-            $._todo_title_priority_tags,
-        ),
-
-        _todo_title_no_priority: $ => choice(
-            $._todo_title_no_priority_no_tags,
-            $._todo_title_no_priority_tags,
-        ),
-
-        _non_todo_title: $ => choice(
-            $._non_todo_title_no_tags,
-            $._non_todo_title_tags,
-        ),
-
-        _todo_title_priority_no_tags: $ => seq(
-            $.todo_keyword,
-            $._horiz_space,
-            $.priority,
-            $._horiz_space,
-            $.title
-        ),
-
-        _todo_title_priority_tags: $ => seq(
-            $._todo_title_priority_no_tags,
-            $.tags
-        ),
-
-        _todo_title_no_priority_no_tags: $ => seq(
-            $.todo_keyword,
-            $._horiz_space,
-            $.title
-        ),
-
-        _todo_title_no_priority_tags: $ => seq(
-            $._todo_title_no_priority_no_tags,
-            $.tags
-        ),
-
-        _non_todo_title_no_tags: $ => seq(
-            $.title
-        ),
-
-        _non_todo_title_tags: $ => seq(
-            $._non_todo_title_no_tags,
-            $.tags
+        _decorated_title: $ => seq(
+            optional(seq(
+                $.todo_keyword,
+                $._horiz_space,
+            )),
+            optional(seq(
+                $.priority,
+                $._horiz_space,
+            )),
+            $.title,
+            optional(seq(
+                $._horiz_space,
+                $.tags,
+            )),
         ),
 
         tags: $ => seq(
@@ -181,13 +121,18 @@ module.exports = grammar({
             repeat1(seq(
                 $.tag,
                 ':'
-            ))
+            )),
         ),
 
-        title: $ => /[^ \t\n]+/,
-        todo_keyword: $ => /[a-zA-Z]+/,
-        priority: $ => /\[#[A-Za-z]\]/,
-        tag: $ => /[\w@#%]+/,
+        title: $ => /[^\n]+/,
+        todo_keyword: $ => token(prec(1, choice(
+            "TODO",
+            "DONE",
+            "HOLD",
+            "CANCELLED",
+        ))),
+        priority: $ => prec(1, /\[#[A-Za-z]\]/),
+        tag: $ => prec(1, /[\w@#%]+/),
         _newline: $ => /\n/,
         _horiz_space: $ => /[ \t]+/,
     }
