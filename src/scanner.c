@@ -15,7 +15,8 @@ enum TokenType {
 	GEN7_STARS,
 	GEN8_STARS,
 	GEN9_STARS,
-	GEN10_STARS
+	GEN10_STARS,
+	NON_STAR,
 };
 
 void *tree_sitter_org_external_scanner_create() { return NULL; }
@@ -31,20 +32,26 @@ void tree_sitter_org_external_scanner_deserialize(void *payload, const char *buf
 
 bool tree_sitter_org_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols)
 {
-	uint8_t num_stars;
+	if (valid_symbols[NON_STAR] && lexer->get_column(lexer) == 0 && lexer->lookahead != '*' &&
+	    lexer->lookahead != '\0') {
+		lexer->result_symbol = NON_STAR;
+	} else if (valid_symbols[0]) {
+		uint8_t num_stars;
 
-	num_stars = 0;
-	if (lexer->get_column(lexer) == 0 && lexer->lookahead == '*') {
-		lexer->advance(lexer, false);
-	} else {
-		return false;
+		num_stars = 0;
+		if (lexer->get_column(lexer) == 0 && lexer->lookahead == '*') {
+			lexer->advance(lexer, false);
+		} else {
+			return false;
+		}
+
+		while (lexer->lookahead == '*') {
+			++num_stars;
+			lexer->advance(lexer, false);
+		}
+
+		lexer->result_symbol = num_stars;
 	}
 
-	while (lexer->lookahead == '*') {
-		++num_stars;
-		lexer->advance(lexer, false);
-	}
-
-	lexer->result_symbol = num_stars;
 	return true;
 }

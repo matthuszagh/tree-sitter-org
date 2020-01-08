@@ -184,3 +184,78 @@ multiple_tags
   (headline (title) (tags (tag) (tag)))
   (headline (title))
   (headline (title)))
+
+======================================================================
+todo_priority_multiple_tags
+======================================================================
+* a
+* TODO [#c] b :tag1:tag2:
+* c
+* d
+
+---
+(source_file
+  (headline (title))
+  (headline (todo_keyword)
+            (priority)
+            (title)
+            (tags
+              (tag) (tag)))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+pre_section
+======================================================================
+some text
+* a
+* b
+* c
+* d
+
+---
+(source_file
+  (section
+    (line))
+  (headline (title))
+  (headline (title))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+inner_section
+======================================================================
+* a
+some text
+* b
+* c
+* d
+
+---
+(source_file
+  (headline (title)
+    (section
+      (line)))
+  (headline (title))
+  (headline (title))
+  (headline (title)))
+
+======================================================================
+multiline_section
+======================================================================
+* a
+some text
+and another line
+* b
+* c
+* d
+
+---
+(source_file
+  (headline (title)
+    (section
+      (line)
+      (line)))
+  (headline (title))
+  (headline (title))
+  (headline (title)))

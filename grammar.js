@@ -20,6 +20,7 @@ module.exports = grammar({
         $._gen8_stars,
         $._gen9_stars,
         $._gen10_stars,
+        $._non_star,
     ],
 
     inline: $ => [
@@ -29,7 +30,7 @@ module.exports = grammar({
 
     rules: {
         source_file: $ => seq(
-            // TODO should include optional contents
+            optional($.section),
             repeat(alias($.gen1, $.headline)),
         ),
 
@@ -96,8 +97,8 @@ module.exports = grammar({
             $._horiz_space,
             $._decorated_title,
             optional($._horiz_space),
-            repeat1($._newline),
-            // TODO should include optional contents
+            $._newline,
+            optional($.section),
         ),
 
         _decorated_title: $ => seq(
@@ -114,6 +115,14 @@ module.exports = grammar({
                 optional($._horiz_space),
                 $.tags,
             )),
+        ),
+
+        section: $ => repeat1($.line),
+
+        line: $ => seq(
+            $._non_star,
+            /.*/,
+            $._newline,
         ),
 
         tags: $ => prec(1, seq(
