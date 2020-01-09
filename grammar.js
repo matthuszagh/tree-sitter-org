@@ -20,12 +20,23 @@ module.exports = grammar({
         $._gen8_stars,
         $._gen9_stars,
         $._gen10_stars,
+        $._gen11_stars,
+        $._gen12_stars,
+        $._gen13_stars,
+        $._gen14_stars,
+        $._gen15_stars,
+        $._gen16_stars,
+        $._gen17_stars,
+        $._gen18_stars,
+        $._gen19_stars,
+        $._gen20_stars,
         $._non_star,
     ],
 
     inline: $ => [
         $._decorated_title,
         $._common_headline,
+        $._word,
     ],
 
     rules: {
@@ -91,6 +102,66 @@ module.exports = grammar({
         gen10: $ => seq(
             $._gen10_stars,
             $._common_headline,
+            repeat(alias($.gen11, $.headline)),
+        ),
+
+        gen11: $ => seq(
+            $._gen11_stars,
+            $._common_headline,
+            repeat(alias($.gen12, $.headline)),
+        ),
+
+        gen12: $ => seq(
+            $._gen12_stars,
+            $._common_headline,
+            repeat(alias($.gen13, $.headline)),
+        ),
+
+        gen13: $ => seq(
+            $._gen13_stars,
+            $._common_headline,
+            repeat(alias($.gen14, $.headline)),
+        ),
+
+        gen14: $ => seq(
+            $._gen14_stars,
+            $._common_headline,
+            repeat(alias($.gen15, $.headline)),
+        ),
+
+        gen15: $ => seq(
+            $._gen15_stars,
+            $._common_headline,
+            repeat(alias($.gen16, $.headline)),
+        ),
+
+        gen16: $ => seq(
+            $._gen16_stars,
+            $._common_headline,
+            repeat(alias($.gen17, $.headline)),
+        ),
+
+        gen17: $ => seq(
+            $._gen17_stars,
+            $._common_headline,
+            repeat(alias($.gen18, $.headline)),
+        ),
+
+        gen18: $ => seq(
+            $._gen18_stars,
+            $._common_headline,
+            repeat(alias($.gen19, $.headline)),
+        ),
+
+        gen19: $ => seq(
+            $._gen19_stars,
+            $._common_headline,
+            repeat(alias($.gen20, $.headline)),
+        ),
+
+        gen20: $ => seq(
+            $._gen20_stars,
+            $._common_headline,
         ),
 
         _common_headline: $ => seq(
@@ -125,18 +196,26 @@ module.exports = grammar({
             $._newline,
         ),
 
-        tags: $ => prec(1, seq(
+        tags: $ => seq(
             ':',
             repeat1(seq(
                 $.tag,
                 ':'
             )),
-        )),
+        ),
+
+        // title: $ => repeat1(choice(
+        //     $._word,
+        //     alias($.tag, $._word),
+        // )),
+
+        // _word: $ => /[^ \t\n]+/,
 
         // TODO titles match terminating whitespace. This should be
         // fine because it should be easy to filter out later, but it
         // would be nice if this could match up to the terminating whitespace.
-        title: $ => /[^ \n]+/,
+        title: $ => /[^\n]+/,
+
         // TODO to be sufficiently general, this will need to be set
         // by the user specified todo keywords (namely
         // org-todo-keywords-1). I think this will require using the
